@@ -6,21 +6,25 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "eslint ."
   },
   "dependencies": {
+    "@expo/vector-icons": "^13.0.0",
+    "@expo/webpack-config": "^0.17.2",
     "expo": "~47.0.12",
+    "expo-image-picker": "~14.0.2",
     "expo-status-bar": "~1.4.2",
     "react": "18.1.0",
-    "react-native": "0.70.5",
     "react-dom": "18.1.0",
-    "react-native-web": "~0.18.9",
-    "@expo/webpack-config": "^0.17.2",
-    "@expo/vector-icons": "^13.0.0",
-    "expo-image-picker": "~14.0.2"
+    "react-native": "0.70.5",
+    "react-native-web": "~0.18.9"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "@react-native-community/eslint-config": "^3.2.0",
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.6.0"
   },
   "private": true
 }
