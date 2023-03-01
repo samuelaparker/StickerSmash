@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Platform } from "react-native";
 import Button from "./components/Button";
 import CircleButton from "./components/CircleButton";
 import IconButton from "./components/IconButton";
@@ -13,6 +13,7 @@ import ImageViewer from "./components/ImageViewer";
 import EmojiList from "./components/EmojiList";
 import EmojiPicker from "./components/EmojiPicker";
 import EmojiSticker from "./components/EmojiSticker";
+import domtoimage from "dom-to-image";
 
 const PlaceholderImage = require("./assets/images/background-image.png");
 
@@ -21,6 +22,8 @@ export default function App() {
   const [showAppOptions, setShowAppOptions] = useState(false);
   const [pickedEmoji, setPickedEmoji] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const imageRef = useRef();
 
   const [status, requestPermission] = MediaLibrary.usePermissions();
   if (status === null) {
@@ -35,21 +38,36 @@ export default function App() {
     setIsModalVisible(true);
   };
 
-  const imageRef = useRef();
-
   const onSaveImageAsync = async () => {
-    try {
-      const localUri = await captureRef(imageRef, {
-        height: 440,
-        quality: 1,
-      });
-
-      await MediaLibrary.saveToLibraryAsync(localUri);
-      if (localUri) {
-        alert("Saved!");
+    if (Platform.OS !== "web") {
+      try {
+        const localUri = await captureRef(imageRef, {
+          height: 440,
+          quality: 1,
+        });
+        await MediaLibrary.saveToLibraryAsync(localUri);
+        if (localUri) {
+          alert("Saved!");
+        }
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      console.log(e);
+    } else {
+      domtoimage
+        .toJpeg(imageRef.current, {
+          quality: 0.95,
+          width: 320,
+          height: 440,
+        })
+        .then((dataUrl) => {
+          let link = document.createElement("a");
+          link.download = "sticker-smash.jpeg";
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     }
   };
 
@@ -112,7 +130,7 @@ export default function App() {
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
       </EmojiPicker>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
     </GestureHandlerRootView>
   );
 }
